@@ -28,10 +28,14 @@ predictionForm.addEventListener('submit', function(event) {
     const jsonPayload = JSON.stringify(data);
     console.log("Constructed JSON Payload:", jsonPayload);
 
+    // --- Determine API Base URL ---
+    // Use local server for local development, and production server for deployed app
+    const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://127.0.0.1:5000'
+        : 'https://YOUR-BACKEND-API-URL.onrender.com'; // TODO: Replace with your actual deployed backend URL (e.g. on Render)
+
     // --- Use the fetch() API to send the POST request ---
-    // The first argument is the URL of our Flask API's predict endpoint.
-    // The second argument is an options object to configure the request.
-    fetch('http://127.0.0.1:5000/predict', {
+    fetch(`${apiBaseUrl}/predict`, {
         method: 'POST', // We are sending data, so we use the POST method.
         headers: {
             // This header is crucial. It tells the server the body of our request is JSON.
@@ -100,7 +104,7 @@ predictionForm.addEventListener('submit', function(event) {
         const errorHTML = `
             <h2>✗ Error</h2>
             <p>${error.message}</p>
-            <p><strong>Make sure the Flask server is running at http://127.0.0.1:5000</strong></p>
+            <p><strong>Make sure the Flask server is running and accessible.</strong></p>
         `;
         
         errorContainer.innerHTML = errorHTML;

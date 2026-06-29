@@ -1,5 +1,4 @@
 myenv/
 diabetes.csv
 .ipynb_checkpoints
-*.joblib
 __pycache__/
