@@ -7,7 +7,7 @@ const resultContainer = document.getElementById('result-container');
 const errorContainer = document.getElementById('error-container');
 
 // Add an event listener to the form for the 'submit' event.
-predictionForm.addEventListener('submit', function(event) {
+predictionForm.addEventListener('submit', function (event) {
     // Prevent the default form submission behavior.
     event.preventDefault();
     console.log("Form submission detected! Default action prevented.");
@@ -32,7 +32,7 @@ predictionForm.addEventListener('submit', function(event) {
     // Use local server for local development, and production server for deployed app
     const apiBaseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:5000'
-        : 'https://YOUR-BACKEND-API-URL.onrender.com'; // TODO: Replace with your actual deployed backend URL (e.g. on Render)
+        : 'https://diabetes-prediction-api-wz90.onrender.com'; // TODO: Replace with your actual deployed backend URL (e.g. on Render)
 
     // --- Use the fetch() API to send the POST request ---
     fetch(`${apiBaseUrl}/predict`, {
@@ -44,31 +44,31 @@ predictionForm.addEventListener('submit', function(event) {
         // The 'body' of the request is our serialized JSON payload.
         body: jsonPayload
     })
-    .then(response => {
-        // .then() is called when the server sends a response back.
-        // First, check if the response was successful (HTTP status code 200-299).
-        if (!response.ok) {
-            // If the server response was not ok, we create our own error to be
-            // caught by the .catch() block, so we can handle it in one place.
-            throw new Error(`Server responded with an error: ${response.status}`);
-        }
-        // If the response is ok, we parse the JSON body of the response.
-        // response.json() also returns a Promise, which is why we need another .then().
-        return response.json();
-    })
-    .then(predictionData => {
-        // This .then() is called when the response.json() Promise resolves.
-        // 'predictionData' is now the JavaScript object sent back from our Flask API.
-        console.log("Success! Received prediction from API:", predictionData);
+        .then(response => {
+            // .then() is called when the server sends a response back.
+            // First, check if the response was successful (HTTP status code 200-299).
+            if (!response.ok) {
+                // If the server response was not ok, we create our own error to be
+                // caught by the .catch() block, so we can handle it in one place.
+                throw new Error(`Server responded with an error: ${response.status}`);
+            }
+            // If the response is ok, we parse the JSON body of the response.
+            // response.json() also returns a Promise, which is why we need another .then().
+            return response.json();
+        })
+        .then(predictionData => {
+            // This .then() is called when the response.json() Promise resolves.
+            // 'predictionData' is now the JavaScript object sent back from our Flask API.
+            console.log("Success! Received prediction from API:", predictionData);
 
-        // Determine if diabetic or non-diabetic for styling
-        const isDiabetic = predictionData.prediction_class === 1;
-        const containerClass = isDiabetic ? 'diabetic' : 'non-diabetic';
-        const headerIcon = isDiabetic ? '⚠️' : '✓';
-        const headerText = isDiabetic ? 'Diabetic Risk Detected' : 'Low Diabetes Risk';
+            // Determine if diabetic or non-diabetic for styling
+            const isDiabetic = predictionData.prediction_class === 1;
+            const containerClass = isDiabetic ? 'diabetic' : 'non-diabetic';
+            const headerIcon = isDiabetic ? '⚠️' : '✓';
+            const headerText = isDiabetic ? 'Diabetic Risk Detected' : 'Low Diabetes Risk';
 
-        // Create HTML to display the prediction result with dynamic styling
-        const resultHTML = `
+            // Create HTML to display the prediction result with dynamic styling
+            const resultHTML = `
             <div class="result-box ${containerClass}">
                 <h2>${headerIcon} ${headerText}</h2>
                 <p><strong>Prediction Result:</strong> ${predictionData.prediction_label}</p>
@@ -83,31 +83,31 @@ predictionForm.addEventListener('submit', function(event) {
                     </div>
                 </div>
                 <p style="margin-top: 15px; font-size: 12px; font-style: italic; color: #666;">
-                    ${isDiabetic 
-                        ? '⚠️ This indicates a higher likelihood of diabetes. Please consult with a healthcare professional.' 
-                        : '✓ This indicates a lower likelihood of diabetes. Continue maintaining healthy habits.'}
+                    ${isDiabetic
+                    ? '⚠️ This indicates a higher likelihood of diabetes. Please consult with a healthcare professional.'
+                    : '✓ This indicates a lower likelihood of diabetes. Continue maintaining healthy habits.'}
                 </p>
             </div>
         `;
-        
-        // Inject the result HTML into the result container
-        resultContainer.innerHTML = resultHTML;
-        resultContainer.classList.add('show');
-        console.log("Prediction result displayed on the webpage with dynamic styling.");
-    })
-    .catch(error => {
-        // The .catch() block is executed if there's a network error (e.g., server is down)
-        // or if we threw an error in the first .then() block.
-        console.error("Error communicating with the API:", error);
-        
-        // Display error message
-        const errorHTML = `
+
+            // Inject the result HTML into the result container
+            resultContainer.innerHTML = resultHTML;
+            resultContainer.classList.add('show');
+            console.log("Prediction result displayed on the webpage with dynamic styling.");
+        })
+        .catch(error => {
+            // The .catch() block is executed if there's a network error (e.g., server is down)
+            // or if we threw an error in the first .then() block.
+            console.error("Error communicating with the API:", error);
+
+            // Display error message
+            const errorHTML = `
             <h2>✗ Error</h2>
             <p>${error.message}</p>
             <p><strong>Make sure the Flask server is running and accessible.</strong></p>
         `;
-        
-        errorContainer.innerHTML = errorHTML;
-        errorContainer.classList.add('show');
-    });
+
+            errorContainer.innerHTML = errorHTML;
+            errorContainer.classList.add('show');
+        });
 });
